@@ -5,7 +5,7 @@ date: "March 12, 2018"
 output: html_document
 ---
 
-Working with the Ag Finance Databook
+Working with the [Ag Finance Databook](https://www.kansascityfed.org/research/indicatorsdata/agfinancedatabook)
 
 ```{r setup, include=FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
