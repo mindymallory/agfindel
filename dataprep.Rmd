@@ -1,0 +1,126 @@
+---
+title: "Ag Finance Databook"
+author: "Mindy L. Mallory"
+date: "March 12, 2018"
+output: html_document
+---
+
+Working with the Ag Finance Databook
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+```{r}
+# install.packages("tidyverse")
+library(tidyverse)
+library(readxl)
+
+
+
+url <- "https://www.kansascityfed.org/~/media/files/publicat/research/indicatorsdata/agfinance/historicaldata-dbk.xlsx"
+destfile <- "databook.xlsx"
+download.file(url, destfile, mode = 'wb')
+```
+
+
+Getting the 'a' tables in. 
+```{r}
+# 'a' tables
+
+
+
+data.a1  <- read_excel("databook.xlsx", sheet = "afdr_a1")
+data.a2  <- read_excel("databook.xlsx", sheet = "afdr_a2")
+data.a3  <- read_excel("databook.xlsx", sheet = "afdr_a3")
+data.a4  <- read_excel("databook.xlsx", sheet = "afdr_a4")
+data.a5  <- read_excel("databook.xlsx", sheet = "afdr_a5")
+data.a6  <- read_excel("databook.xlsx", sheet = "afdr_a6")
+data.a7  <- read_excel("databook.xlsx", sheet = "afdr_a7")
+data.a8  <- read_excel("databook.xlsx", sheet = "afdr_a8")
+data.a9  <- read_excel("databook.xlsx", sheet = "afdr_a9")
+data.a10  <- read_excel("databook.xlsx", sheet = "afdr_a10")
+data.a11  <- read_excel("databook.xlsx", sheet = "afdr_a11")
+data.a12  <- read_excel("databook.xlsx", sheet = "afdr_a12")
+data.a13  <- read_excel("databook.xlsx", sheet = "afdr_a13")
+data.a14  <- read_excel("databook.xlsx", sheet = "afdr_a14")
+
+```
+
+Getting the 'b' tables in.
+```{r}
+data.b1  <- read_excel("databook.xlsx", sheet = "afdr_b1")
+data.b2  <- read_excel("databook.xlsx", sheet = "afdr_b2")
+data.b3  <- read_excel("databook.xlsx", sheet = "afdr_b3")
+data.b4  <- read_excel("databook.xlsx", sheet = "afdr_b4")
+data.b5  <- read_excel("databook.xlsx", sheet = "afdr_b5")
+data.b6  <- read_excel("databook.xlsx", sheet = "afdr_b6")
+data.b7  <- read_excel("databook.xlsx", sheet = "afdr_b7")
+data.b8  <- read_excel("databook.xlsx", sheet = "afdr_b8")
+data.b9  <- read_excel("databook.xlsx", sheet = "afdr_b9")
+```
+
+Getting the 'c' tables in.
+
+```{r}
+data.c1  <- read_excel("databook.xlsx", sheet = "afdr_c1")
+data.c2  <- read_excel("databook.xlsx", sheet = "afdr_c2")
+data.c3  <- read_excel("databook.xlsx", sheet = "afdr_c3")
+data.c4  <- read_excel("databook.xlsx", sheet = "afdr_c4")
+data.c5  <- read_excel("databook.xlsx", sheet = "afdr_c5")
+data.c6  <- read_excel("databook.xlsx", sheet = "afdr_c6")
+data.c7  <- read_excel("databook.xlsx", sheet = "afdr_c7")
+
+```
+
+
+# Historical Coverage
+
+## The 'a' Tables
+
+Section A of the Agricultural Finance Databook are from quarterly sample surveys for non-real-estate farm loans of $1,000 or more made by commercial banks. a1-a7 'attempt to show estimates that are comparable to those that have been presented for a number of years.' 
+
+| a table |  Range                                   |
+|:-----------------------------|:---------------------------------|
+|a1-a6    | 1977- annual and quarters  |
+|a7       | 1987- quarters              |
+|a8-a13   | 1999Q4- quarters            |
+
+## The 'b' Tables
+
+Section B of the AFD are quarterly reports of condition and income for commercial banks. 
+
+| b table |  Range                                   |
+|:-----------------------------|:---------------------------------|
+|b1       | 1973- Q4, 1986-quarterly   |
+|b2       | 1987- quarterly            |
+|b3       | 1984- annual                     |
+|b4       | 1991- annual and quarters   |
+|b5       | 1991- annual and quarters  |
+|b6       | 1987- quarterly  |
+|b7       | 1988- quarterly, 1977- annual |
+|b8       | 1975- quarterly  |
+|b9       | 1981- quarterly  | 
+
+## The 'c' Tables
+
+Section C of the AFD are quarterly surveys of agricultural credit conditions and farmland values at commercial banks. 
+
+| c table |  Range                                   |
+|:-----------------------------|:---------------------------------|
+|c1       | 1991-quarterly   |
+|c2       | 1991-quarterly            |
+|c3       | 1991-quarterly                     |
+|c4       | 1991-quarterly    |
+|c5       | 2001- quarterly  |
+|c6       | 1991-quarterly  |
+|c7       | 2001- quarterly |
+
+ 
+
+```{r}
+
+
+
+```
+
