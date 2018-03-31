@@ -7,8 +7,8 @@ output: html_document
 
 Working with the [Ag Finance Databook](https://www.kansascityfed.org/research/indicatorsdata/agfinancedatabook)
 
-```{r setup, include=FALSE, warning=FALSE, message=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, warning=FALSE, message=FALSE)
 ```
 
 ```{r}
@@ -120,7 +120,21 @@ Section C of the AFD are quarterly surveys of agricultural credit conditions and
 
 ```{r}
 
+data.b6[data.b6 == "."] <- 0
 
+table_list <- list(data.a3, data.a4, data.a5, data.a6, data.b1[,1:3], data.b2, data.b6)
+
+
+
+tables   <- left_join(data.a1, data.a2, by = "Period")
+n <- length(table_list)
+
+for(i in 1:n){
+  
+  tables <- left_join(tables, table_list[[i]], by = "Period")
+  
+}
+tables <- tables[41:dim(tables)[1],]
 
 ```
 
