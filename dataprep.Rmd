@@ -135,6 +135,35 @@ for(i in 1:n){
   
 }
 tables <- tables[41:dim(tables)[1],]
+tables <- tables[, -86]
 
+```
+
+## Potential independent variables
+
+Share of outstanding loans Non-performing total: column 83
+
+Share of outstanding loans Non-performing, 90 days past due, accrueing: column 84
+
+Share of outstanding loans Non-performing, non-accrueing: column 85
+
+
+
+```{r}
+# Partial Least Squares
+library(pls)
+
+# Must lag! Didn't do that yet
+
+tables  <- tables %>% na.omit %>% as.data.frame
+tables  <- cbind(tables[2:dim(tables)[1], 83], tables[1:(dim(tables)[1]-1), -83]) # dplyr was not lagging correctly so I lagged by hand and made col 83 first col
+train   = sample(1:nrow(tables), nrow(tables)/2)
+test    = tables[-train,]
+pls.fit = plsr(tables[, 1]~., data = tables, subset = train, scale = FALSE, validation = "CV")
+summary(pls.fit)
+
+validationplot(pls.fit,val.type="MSEP")
+pls.pred=predict(pls.fit, ncomp=2)[-train]
+mean((pls.pred-test[, 1])^2)
 ```
 
