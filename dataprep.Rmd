@@ -153,10 +153,10 @@ Share of outstanding loans Non-performing, non-accrueing: column 85
 # Partial Least Squares
 library(pls)
 
-# Must lag! Didn't do that yet
+
 
 tables  <- tables %>% na.omit %>% as.data.frame
-tables  <- cbind(tables[2:dim(tables)[1], 83], tables[1:(dim(tables)[1]-1), -83]) # dplyr was not lagging correctly so I lagged by hand and made col 83 first col
+tables  <- cbind(tables[2:dim(tables)[1], 83], tables[1:(dim(tables)[1]-1), c(-2, -83)]) # dplyr was not lagging correctly so I lagged by hand and made col 83 first col
 train   = sample(1:nrow(tables), nrow(tables)/2)
 test    = tables[-train,]
 pls.fit = plsr(tables[, 1]~., data = tables, subset = train, scale = FALSE, validation = "CV")
@@ -165,5 +165,28 @@ summary(pls.fit)
 validationplot(pls.fit,val.type="MSEP")
 pls.pred=predict(pls.fit, ncomp=2)[-train]
 mean((pls.pred-test[, 1])^2)
+plot(pls.fit)
 ```
 
+
+```{r}
+library(glmnet)
+grid    <-10^seq(10,-2,length=100)
+tables2 <- data.matrix(tables)
+lasso.mod=glmnet(tables2[train , c(-1, -2)], tables2[train, 1],alpha=1,lambda=grid)
+plot(lasso.mod)
+
+cv.out <- cv.glmnet(tables2[train , c(-1, -2)], tables2[train, 1], alpha = 1)
+plot(cv.out)
+
+bestlam=cv.out$lambda.min
+lasso.pred=predict(lasso.mod,s=bestlam, newx=tables2[-train , c(-1, -2)])
+mean((lasso.pred-test[, 1])^2)
+
+
+out=glmnet(tables2[ , c(-1, -2)], tables2[, 1], alpha=1, lambda=grid)
+lasso.coef=predict(out,type="coefficients",s=bestlam)[1:20,]
+lasso.coef
+lasso.coef[lasso.coef!=0]
+
+```
