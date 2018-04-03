@@ -28,7 +28,7 @@ Getting the 'a' tables in.
 ```{r}
 # 'a' tables
 
-
+library(readxl)
 
 data.a1  <- read_excel("databook.xlsx", sheet = "afdr_a1")
 data.a2  <- read_excel("databook.xlsx", sheet = "afdr_a2")
@@ -119,7 +119,7 @@ Section C of the AFD are quarterly surveys of agricultural credit conditions and
  
 
 ```{r}
-
+library(dplyr)
 data.b6[data.b6 == "."] <- 0
 
 table_list <- list(data.a3, data.a4, data.a5, data.a6, data.b1[,1:3], data.b2, data.b6)
@@ -152,11 +152,18 @@ Share of outstanding loans Non-performing, non-accrueing: column 85
 ```{r}
 # Partial Least Squares
 library(pls)
+library(xts)
+detach("package:dplyr", unload = TRUE)
+
+tables$PeriodII  <- as.yearqtr(1977 +seq(0, dim(tables)[1]-1)/4, format = "%Y Quarter %q")
+tables  <- xts(tables, order.by = tables$PeriodII )
 
 
+tables  <- cbind(tables[2:dim(tables)[1], 83], tables[1:(dim(tables)[1]-1), c(-2, -83)]) # dplyr was not lagging correctly so I lagged by hand and made col 83 first col
+
+tables  <- cbind(tables[5:dim(tables)[1], 83], lag(tables, n=1))
 
 tables  <- tables %>% na.omit %>% as.data.frame
-tables  <- cbind(tables[2:dim(tables)[1], 83], tables[1:(dim(tables)[1]-1), c(-2, -83)]) # dplyr was not lagging correctly so I lagged by hand and made col 83 first col
 train   = sample(1:nrow(tables), nrow(tables)/2)
 test    = tables[-train,]
 pls.fit = plsr(tables[, 1]~., data = tables, subset = train, scale = FALSE, validation = "CV")
@@ -190,3 +197,7 @@ lasso.coef
 lasso.coef[lasso.coef!=0]
 
 ```
+
+
+
+
