@@ -1,17 +1,70 @@
 ---
-title: "Ag Finance Databook"
-author: "Mindy L. Mallory"
-date: "March 12, 2018"
-output: html_document
+title: "Can Machine Learning Techniques Predict Non-performance of Farm Non-Real Estate Loans in the Ag Finance Databook"
+author: |
+  | "Mindy Mallory, Todd Kuethe, and Todd Hubbs"
+  | "University of Illinois"
+date: "April 6, 2018"
+output: beamer_presentation
 ---
 
-Working with the [Ag Finance Databook](https://www.kansascityfed.org/research/indicatorsdata/agfinancedatabook)
+
+# Outline of Talk
+
++ Basic motivation of why it is intersting/important to predict non-performing loans in the farm sector. If there's gonna be another 1980's, want to see it coming
++ Problem is inherently 'high dimentional' few observations, many (probably colinear) possible predictors
++ Can the shiny new toy (machine learning techniques) help with this problem?
++ Discussion of basic similarities and differences between ML and typical econometrics
++ Introduce (in spirit) the ML models test run in this talk
++ Results individually
++ Results compare across
++ Not clear what if any could be an econometric straw man? What would be the most natural traditional linear model to put these up against?
+
+
+# Research Question
+
++ Try to predict farm non-performing loans in the Agricultural Finance Databook
+  + Selected 'A' and 'B' tables
+  
+![](assets\kcfedsnip.png)
+
+
+# Research Question
+
++ Try to predict farm non-performing loans in the Agricultural Finance Databook
+  
+## Why??
+
+# Research Question
+
++ Try to predict farm non-performing loans in the Agricultural Finance Databook
+  
+## Why??
+
++ See 'the next 1980's crisis coming'
++ Even if not 1980's crisis levels $\Rightarrow$  Still good to predict what non-performance will look like next quarter.
+
+
+
+# Research Question
+
++ Try to predict farm non-performing loans in the Agricultural Finance Databook
+
+## Why??
+
++ Less access to bank-level data
++ Can machine learning techniques help us make sense of aggregate-level data?
++ Can machine learning techniques help us handle high-dimentional data?
+
++ Like in the Ag Finance Databook
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, cache = TRUE, warning=FALSE, message=FALSE)
 ```
 
-```{r}
+```{r, echo = FALSE}
+# Working with the [Ag Finance Databook](https://www.kansascityfed.org/research/indicatorsdata/agfinancedatabook) Some documentation here. But not a lot...
 # install.packages("tidyverse")
 library(tidyverse)
 library(readxl)
@@ -24,8 +77,8 @@ download.file(url, destfile, mode = 'wb')
 ```
 
 
-Getting the 'a' tables in. 
-```{r}
+
+```{r, echo = FALSE}
 # 'a' tables
 
 library(readxl)
@@ -47,8 +100,8 @@ data.a14  <- read_excel("databook.xlsx", sheet = "afdr_a14")
 
 ```
 
-Getting the 'b' tables in.
-```{r}
+
+```{r, echo = FALSE}
 data.b1  <- read_excel("databook.xlsx", sheet = "afdr_b1")
 data.b2  <- read_excel("databook.xlsx", sheet = "afdr_b2")
 data.b3  <- read_excel("databook.xlsx", sheet = "afdr_b3")
@@ -60,9 +113,9 @@ data.b8  <- read_excel("databook.xlsx", sheet = "afdr_b8")
 data.b9  <- read_excel("databook.xlsx", sheet = "afdr_b9")
 ```
 
-Getting the 'c' tables in.
 
-```{r}
+
+```{r, echo = FALSE}
 data.c1  <- read_excel("databook.xlsx", sheet = "afdr_c1")
 data.c2  <- read_excel("databook.xlsx", sheet = "afdr_c2")
 data.c3  <- read_excel("databook.xlsx", sheet = "afdr_c3")
@@ -74,51 +127,124 @@ data.c7  <- read_excel("databook.xlsx", sheet = "afdr_c7")
 ```
 
 
-# Historical Coverage
-
-## The 'a' Tables
+# Historical Coverage: The 'A' Tables
 
 Section A of the Agricultural Finance Databook are from quarterly sample surveys for non-real-estate farm loans of $1,000 or more made by commercial banks. a1-a7 'attempt to show estimates that are comparable to those that have been presented for a number of years.' 
 
-| a table |  Range                                   |
+| A table |  Range                                   |
 |:-----------------------------|:---------------------------------|
-|a1-a6    | 1977- annual and quarters  |
-|a7       | 1987- quarters              |
-|a8-a13   | 1999Q4- quarters            |
+|*A1-A6*    | *1977- annual and quarters*  |
+|A7       | 1987- quarters (interest rates - lots of NA's before 1990's)              |
+|A8-A13   | 1999Q4- quarters            |
 
-## The 'b' Tables
+# Historical Coverage: The 'B' Tables
 
 Section B of the AFD are quarterly reports of condition and income for commercial banks. 
 
-| b table |  Range                                   |
+| B table |  Range                                   |
 |:-----------------------------|:---------------------------------|
-|b1       | 1973- Q4, 1986-quarterly   |
-|b2       | 1987- quarterly            |
-|b3       | 1984- annual                     |
-|b4       | 1991- annual and quarters   |
-|b5       | 1991- annual and quarters  |
-|b6       | 1987- quarterly  |
-|b7       | 1988- quarterly, 1977- annual |
-|b8       | 1975- quarterly  |
-|b9       | 1981- quarterly  | 
+|*B1       | 1973- Q4, 1986-quarterly*   |
+|*B2*       | *1987- quarterly*            |
+|B3       | 1984- annual                     |
+|B4       | 1991- annual and quarters   |
+|B5       | 1991- annual and quarters  |
+|*B6       | 1987- quarterly*  |
+|B7       | 1988- quarterly, 1977- annual |
+|B8       | 1975- quarterly  |
+|B9       | 1981- quarterly  | 
 
-## The 'c' Tables
+# Historical Coverage: The 'C' Tables
 
 Section C of the AFD are quarterly surveys of agricultural credit conditions and farmland values at commercial banks. 
 
-| c table |  Range                                   |
+| C table |  Range                                   |
 |:-----------------------------|:---------------------------------|
-|c1       | 1991-quarterly   |
-|c2       | 1991-quarterly            |
-|c3       | 1991-quarterly                     |
-|c4       | 1991-quarterly    |
-|c5       | 2001- quarterly  |
-|c6       | 1991-quarterly  |
-|c7       | 2001- quarterly |
+|C1       | 1991-quarterly   |
+|C2       | 1991-quarterly            |
+|C3       | 1991-quarterly                     |
+|C4       | 1991-quarterly    |
+|C5       | 2001- quarterly  |
+|C6       | 1991-quarterly  |
+|C7       | 2001- quarterly |
 
+# This Study: Selected Variables from the A and B Tables
+A1-A6  
+Feeder livestock	
+Other livestock	
+Other current operating expenses	
+Farm machinery and equipment	
+Other	
+1 to 9	
+10 to 24	
+25 to 99	
+100 and over	
+Small or mid-size	
+Large
+
+# This Study: Selected Variables from the A and B Tables
+
+A.1. *Number* of Non-Real Estate Bank Loans  
+A.2. *Average Size* of Non-Real Estate Bank Loans  
+A.3. *Volume *of Non-Real Estate Bank Loans  
+A.4. *Average Maturit*y of Non-Real Estate Bank Loans  
+A.5. *Average Effective Interest Rate* on Non-Real Estate Bank Loans
+A.6. *Share* of Non-Real Estate Bank Loans *with a Floating Interest Rate*  
+
+# This Study: Selected Variables from the A and B Tables
+B1 Loan volumes
+
+# This Study: Selected Variables from the A and B Tables
+B2  
+Estimated volume - Total	
+Estimated volume - Past due 30 to 89 days, accruing	  
+Estimated volume - Nonperforming - Total	 
+Estimated volume - Nonperforming - Past due 90 days, accruing  	
+Estimated volume - Nonperforming - Non-accruing	  
+Share of outstanding loans - Total	  
+Share of outstanding loans - Past due 30 to 89 days, accuring	  
+Share of outstanding loans - Nonperforming - Total	  
+Share of outstanding loans - Nonperforming - Past due 90 days, accruing	  
+Share of outstanding loans - Nonperforming - Non-accruing  
+
+# This Study: Selected Variables from the A and B Tables
+B6 - Interst rates
  
+# Potential independent variables
 
-```{r}
+*Share of outstanding loans Non-performing total*
+
+Share of outstanding loans Non-performing, 90 days past due, accrueing
+
+Share of outstanding loans Non-performing, non-accrueing
+
+# How many Lags?
+
+1
+
+# High Dimentional Problem 
+
++ 122 observations, and 88 potential 'predictors'. Many are most probably highly colinear. 
+
+# Econometrics versus Machine Learning 
+
++ ML more flexible on model specification
+  + Use cross validation to keep honest wrt overfitting
+  
+# Econometrics versus Machine Learning: Variable Selection
+
++ ML has variable selection baked into most procedures
+
++ Econometrics strategies to reduce high dimentionality
+  + Theory 
+  + Make and index
+  + Ad hoc
+  + General-to-Specific
+  + Specific-to-General
+  
+  
+
+
+```{r, echo = FALSE}
 library(dplyr)
 data.b6[data.b6 == "."] <- 0
 
@@ -139,65 +265,99 @@ tables <- tables[, -86]
 
 ```
 
-## Potential independent variables
-
-Share of outstanding loans Non-performing total: column 83
-
-Share of outstanding loans Non-performing, 90 days past due, accrueing: column 84
-
-Share of outstanding loans Non-performing, non-accrueing: column 85
 
 
+# Partial Least Squares
 
-```{r}
+1. Fit OLS $Y = \beta^1 X + \epsilon^1$
+2. Set $Z_1 = \beta ^1 X$
+3. Fit OLS $\epsilon^1 = \beta^2 X + \epsilon^2$
+4.  Set $Z_2 =  \beta^2 X$
+.
+.
+.
+5. Fit OLS $Y = \gamma Z + \eta$ 
+
+# PLS Results
+
+```{r, echo = FALSE}
 # Partial Least Squares
 library(pls)
 library(xts)
-detach("package:dplyr", unload = TRUE)
 
-tables$PeriodII  <- as.yearqtr(1977 +seq(0, dim(tables)[1]-1)/4, format = "%Y Quarter %q")
-tables  <- xts(tables, order.by = tables$PeriodII )
-
+# Questions: How many lags...
+#detach("package:dplyr", unload = TRUE)
+#tables$PeriodII  <- as.yearqtr(1977 +seq(0, dim(tables)[1]-1)/4, format = "%Y Quarter %q")
+#tables  <- xts(tables, order.by = tables$PeriodII )
+#tables  <- cbind(tables[5:dim(tables)[1], 83], lag(tables, n=1))
 
 tables  <- cbind(tables[2:dim(tables)[1], 83], tables[1:(dim(tables)[1]-1), c(-2, -83)]) # dplyr was not lagging correctly so I lagged by hand and made col 83 first col
 
-tables  <- cbind(tables[5:dim(tables)[1], 83], lag(tables, n=1))
+
+tables[, 74] <- as.numeric(tables[, 74])  # Somehow, columns got cast as character
+tables[, 75] <- as.numeric(tables[, 75])  # Somehow, columns got cast as character
+tables[, 87] <- as.numeric(tables[, 87])  # Somehow, columns got cast as character
+tables[, 88] <- as.numeric(tables[, 88])  # Somehow, columns got cast as character
+tables[, 89] <- as.numeric(tables[, 89])  # Somehow, columns got cast as character
+tables[, 90] <- as.numeric(tables[, 90])  # Somehow, columns got cast as character
 
 tables  <- tables %>% na.omit %>% as.data.frame
 train   = sample(1:nrow(tables), nrow(tables)/2)
 test    = tables[-train,]
 pls.fit = plsr(tables[, 1]~., data = tables, subset = train, scale = FALSE, validation = "CV")
-summary(pls.fit)
+#summary(pls.fit)
 
 validationplot(pls.fit,val.type="MSEP")
-pls.pred=predict(pls.fit, ncomp=2)[-train]
-mean((pls.pred-test[, 1])^2)
+```
+
+# PLS Results
+
+```{r, echo = FALSE}
+
+#pls.pred=predict(pls.fit, ncomp=2)[-train]
+#mean((pls.pred-test[, 1])^2)
 plot(pls.fit)
 ```
 
 
-```{r}
+# Lasso Regression Results
+
+```{r, echo = FALSE}
 library(glmnet)
 grid    <-10^seq(10,-2,length=100)
 tables2 <- data.matrix(tables)
-lasso.mod=glmnet(tables2[train , c(-1, -2)], tables2[train, 1],alpha=1,lambda=grid)
+lasso.mod=glmnet(tables2[train , c(-1, -2 )], tables2[train, 1],alpha=1,lambda=grid)
 plot(lasso.mod)
-
-cv.out <- cv.glmnet(tables2[train , c(-1, -2)], tables2[train, 1], alpha = 1)
-plot(cv.out)
-
-bestlam=cv.out$lambda.min
-lasso.pred=predict(lasso.mod,s=bestlam, newx=tables2[-train , c(-1, -2)])
-mean((lasso.pred-test[, 1])^2)
-
-
-out=glmnet(tables2[ , c(-1, -2)], tables2[, 1], alpha=1, lambda=grid)
-lasso.coef=predict(out,type="coefficients",s=bestlam)[1:20,]
-lasso.coef
-lasso.coef[lasso.coef!=0]
-
 ```
 
 
+# Lasso Regression Results
+```{r, echo = FALSE}
+
+cv.out <- cv.glmnet(tables2[train , c(-1, -2)], tables2[train, 1], alpha = 1)
+plot(cv.out)
+```
+
+# Lasso Regression Results
+
+```{r, echo = FALSE}
+bestlam=cv.out$lambda.min
+lasso.pred=predict(lasso.mod,s=bestlam, newx=tables2[-train , c(-1, -2)])
+# mean((lasso.pred-test[, 1])^2)
+
+
+out=glmnet(tables2[ , c(-1, -2)], tables2[, 1], alpha=1, lambda=grid)
+coef(cv.out, s = "lambda.min")
+```
+
+# Boosting Regression Trees
+
+```{r, echo = FALSE}
+library(gbm)
+
+boost   <- gbm(tables[train, 1]~., data = tables[train, c(-1, -2)], distribution = "gaussian", n.trees = 10000, interaction.depth = 4, shrinkage = .0001)
+boost.pred <-  predict(boost, newdata = tables[-train, c(-1, -2)], n.trees = 1000)
+mean((boost.pred-test[, 1])^2)
+```
 
 
